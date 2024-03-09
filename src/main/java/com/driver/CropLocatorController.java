@@ -12,23 +12,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/crop-locator")
 public class CropLocatorController {
-	 private final CropService cropService;
+	private final CropService cropService;
 
-	    public CropLocatorController(CropService cropService) {
-	    	// your code goes here
-	    
-	    }
+	public CropLocatorController(CropService cropService) {
+		this.cropService = cropService;
+	}
 
-	    @PostMapping("/register")
-	    public ResponseEntity<String> registerCrop(@RequestBody Crop crop) {
-	    	// your code goes here
-	        return null;
-	    }
+	@PostMapping("/register")
+	public ResponseEntity<String> registerCrop(@RequestBody Crop crop) {
+		cropService.addCrop(crop);
+		return new ResponseEntity<>("Crop registered successfully!", HttpStatus.CREATED);
+	}
 
-	    @GetMapping("/locate")
-	    public ResponseEntity<Crop> getCropByLocation(@RequestParam double latitude, @RequestParam double longitude) {
-	    	// your code goes here
-	    	return null;
-	    }
+	@GetMapping("/locate/{latitude}/{longitude}")
+	public ResponseEntity<Crop> getCropByLocation(@RequestParam double latitude, @RequestParam double longitude) {
+		Crop foundCrop = cropService.findCropByLocation(latitude, longitude);
+
+		if (foundCrop != null) {
+			return new ResponseEntity<>(foundCrop, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
 
 }
